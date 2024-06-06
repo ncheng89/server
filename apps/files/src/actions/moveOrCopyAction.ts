@@ -182,10 +182,8 @@ const openFilePickerForAction = async (action: MoveCopyAction, dir = '/', nodes:
 	const filePicker = getFilePickerBuilder(t('files', 'Choose destination'))
 		.allowDirectories(true)
 		.setFilter((n: Node) => {
-			// We only want to show folders that we can create nodes in
-			return (n.permissions & Permission.CREATE) !== 0
-				// We don't want to show the current nodes in the file picker
-				&& !fileIDs.includes(n.fileid)
+			// We don't want to show the current nodes in the file picker
+			return !fileIDs.includes(n.fileid)
 		})
 		.setMimeTypeFilter([])
 		.setMultiSelect(false)
