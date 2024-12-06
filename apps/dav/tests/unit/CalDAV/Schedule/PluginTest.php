@@ -748,7 +748,8 @@ class PluginTest extends TestCase {
 		// construct server request
 		$request = new Request(
 			'PUT',
-			'/remote.php/dav/calendars/user1/personal/B0DC78AE-6DD7-47E3-80BE-89F23E6D5383.ics'
+			'/remote.php/dav/calendars/user1/personal/B0DC78AE-6DD7-47E3-80BE-89F23E6D5383.ics',
+			['x-nc-scheduling' => 'false']
 		);
 		$request->setBaseUrl('/remote.php/dav/');
 		// construct server response
@@ -760,29 +761,9 @@ class PluginTest extends TestCase {
 		// construct server properties and returns
 		$this->server->httpRequest = $request;
 		$this->server->tree = $tree;
-		// construct calendar with a 1 hour event and same start/end time zones
+		// construct empty calendar event
 		$vCalendar = new VCalendar();
 		$vEvent = $vCalendar->add('VEVENT', []);
-		$vEvent->UID->setValue('96a0e6b1-d886-4a55-a60d-152b31401dcc');
-		$vEvent->add('DTSTART', '20240701T080000', ['TZID' => 'America/Toronto']);
-		$vEvent->add('DTEND', '20240701T090000', ['TZID' => 'America/Toronto']);
-		$vEvent->add('SUMMARY', 'Test Recurring Event');
-		$vEvent->add('ORGANIZER', 'mailto:user1@testing.local', ['CN' => 'User One']);
-		$vEvent->add('ATTENDEE', 'mailto:user2@testing.local', [
-			'CN' => 'User Two',
-			'CUTYPE' => 'INDIVIDUAL',
-			'PARTSTAT' => 'NEEDS-ACTION',
-			'ROLE' => 'REQ-PARTICIPANT',
-			'RSVP' => 'TRUE'
-		]);
-		$vEvent->add('ATTENDEE', 'mailto:user@external.local', [
-			'CN' => 'User External',
-			'CUTYPE' => 'INDIVIDUAL',
-			'PARTSTAT' => 'NEEDS-ACTION',
-			'ROLE' => 'REQ-PARTICIPANT',
-			'RSVP' => 'TRUE'
-		]);
-		$vEvent->add('X-NC-DISABLE-SCHEDULING', 'true');
 		// define flags
 		$newFlag = true;
 		$modifiedFlag = false;
@@ -795,8 +776,5 @@ class PluginTest extends TestCase {
 			$modifiedFlag,
 			$newFlag
 		);
-		// test if event was modified and property was removed
-		$this->assertTrue($modifiedFlag);
-		$this->assertFalse(isset($vCalendar->VEVENT->{'X-NC-DISABLE-SCHEDULING'}));
 	}
 }

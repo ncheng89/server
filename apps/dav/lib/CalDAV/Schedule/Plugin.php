@@ -163,17 +163,12 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 
 		try {
 
-			if (!$this->scheduleReply($this->server->httpRequest)) {
+			// Do not generate iTip and iMip messages if scheduling is disabled for this message
+			if ($request->getHeader('x-nc-scheduling') === 'false') {
 				return;
 			}
 
-			// Do not generate iTip and iMip messages if scheduling is disabled for this message
-			// this property is for one time use, and needs to be removed so that if this event
-			// is altered in the future it will correctly generate messages again
-			/** @psalm-suppress UndefinedPropertyFetch */
-			if ($vCal->VEVENT?->{'X-NC-DISABLE-SCHEDULING'}?->getValue() === 'true') {
-				$vCal->VEVENT->remove('X-NC-DISABLE-SCHEDULING');
-				$modified = true;
+			if (!$this->scheduleReply($this->server->httpRequest)) {
 				return;
 			}
 
