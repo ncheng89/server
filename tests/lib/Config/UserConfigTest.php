@@ -748,7 +748,7 @@ class UserConfigTest extends TestCase {
 		string $key,
 		?ValueType $typedAs = null,
 		?array $userIds = null,
-		array $result,
+		array $result = [],
 	): void {
 		$userConfig = $this->generateUserConfig();
 		$this->assertEqualsCanonicalizing(

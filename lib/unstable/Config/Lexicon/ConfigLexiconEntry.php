@@ -40,6 +40,8 @@ class ConfigLexiconEntry {
 		private readonly bool $deprecated = false,
 	) {
 		if ($default !== null) {
+			// in case $default is array but is not expected to be an array...
+			$default = ($type !== ValueType::ARRAY && is_array($default)) ? json_encode($default) : $default;
 			$this->default = match ($type) {
 				ValueType::MIXED => (string)$default,
 				ValueType::STRING => $this->convertFromString((string)$default),
